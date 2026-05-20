@@ -1,6 +1,6 @@
-import { type ClassValue, clsx } from 'clsx'
+import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { differenceInDays, format, isAfter, isBefore } from 'date-fns'
+import { differenceInDays, format, isBefore } from 'date-fns'
 import { LicenceStatus } from '@prisma/client'
 
 // Tailwind class merging
@@ -35,7 +35,6 @@ export function expiryLabel(expiryDate: Date): string {
   if (days < 0) return `Expired ${Math.abs(days)} days ago`
   if (days === 0) return 'Expires today'
   if (days === 1) return 'Expires tomorrow'
-  if (days <= 30) return `Expires in ${days} days`
   if (days <= 90) return `Expires in ${days} days`
   return `Expires ${formatAUDate(expiryDate)}`
 }
