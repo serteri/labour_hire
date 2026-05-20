@@ -1,0 +1,287 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ─── AUTH MODELS ───────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // hashed, null for OAuth users
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  memberships   OrganizationMember[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
+// ─── MULTI-TENANT ──────────────────────────────────────────────
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  abn         String?  // Australian Business Number
+  phone       String?
+  address     String?
+  state       String?  // primary operating state
+  accountType AccountType @default(PROVIDER)
+  plan        Plan     @default(FREE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     OrganizationMember[]
+  licences    LicenceRecord[]
+  workers     WorkerRecord[]
+  alerts      ComplianceAlert[]
+  reports     ReportRecord[]
+  documents   Document[]
+}
+
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  orgId          String
+  userId         String
+  role           MemberRole @default(MEMBER)
+  joinedAt       DateTime @default(now())
+
+  organization   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId])
+}
+
+// ─── LICENCE MANAGEMENT ────────────────────────────────────────
+
+model LicenceRecord {
+  id             String        @id @default(cuid())
+  orgId          String
+  state          AustralianState
+  licenceNumber  String?
+  licenceType    String?       // e.g. "Labour Hire Licence"
+  issuedDate     DateTime?
+  expiryDate     DateTime
+  status         LicenceStatus @default(ACTIVE)
+  notes          String?       @db.Text
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization   Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  documents      Document[]
+
+  @@unique([orgId, state])   // one licence per state per org
+}
+
+// ─── WORKER RECORDS ────────────────────────────────────────────
+
+model WorkerRecord {
+  id                String          @id @default(cuid())
+  orgId             String
+  firstName         String
+  lastName          String
+  email             String?
+  phone             String?
+  jobTitle          String?
+
+  // Visa / Work Rights
+  visaType          String?
+  visaSubclass      String?
+  visaExpiryDate    DateTime?
+  workRightStatus   WorkRightStatus @default(VALID)
+  workHoursLimit    Int?            // null = unrestricted
+
+  // Compliance Documents
+  policeCheckDate   DateTime?
+  policeCheckExpiry DateTime?
+  whsInduction      Boolean         @default(false)
+  whsInductionDate  DateTime?
+
+  // Status
+  isActive          Boolean         @default(true)
+  notes             String?         @db.Text
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  organization      Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  documents         Document[]
+}
+
+// ─── COMPLIANCE ALERTS ─────────────────────────────────────────
+
+model ComplianceAlert {
+  id          String      @id @default(cuid())
+  orgId       String
+  type        AlertType
+  severity    AlertSeverity @default(WARNING)
+  title       String
+  description String?     @db.Text
+  daysUntil   Int?        // days until expiry when alert was created
+  relatedId   String?     // licenceId or workerId
+  relatedType String?     // "LICENCE" or "WORKER"
+  isRead      Boolean     @default(false)
+  isDismissed Boolean     @default(false)
+  emailSent   Boolean     @default(false)
+  emailSentAt DateTime?
+  resolvedAt  DateTime?
+  createdAt   DateTime    @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+}
+
+// ─── REPORTING ─────────────────────────────────────────────────
+
+model ReportRecord {
+  id           String       @id @default(cuid())
+  orgId        String
+  state        AustralianState
+  period       String       // e.g. "2026-H1" (first half of 2026)
+  dueDate      DateTime
+  submittedAt  DateTime?
+  status       ReportStatus @default(PENDING)
+  notes        String?      @db.Text
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+}
+
+// ─── DOCUMENTS ─────────────────────────────────────────────────
+
+model Document {
+  id           String    @id @default(cuid())
+  orgId        String
+  name         String
+  fileUrl      String
+  fileType     String    // "application/pdf", "image/jpeg" etc.
+  fileSize     Int       // bytes
+  category     DocumentCategory
+  licenceId    String?
+  workerId     String?
+  uploadedAt   DateTime  @default(now())
+
+  organization Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  licence      LicenceRecord? @relation(fields: [licenceId], references: [id])
+  worker       WorkerRecord?  @relation(fields: [workerId], references: [id])
+}
+
+// ─── ENUMS ─────────────────────────────────────────────────────
+
+enum AccountType {
+  PROVIDER   // labour hire provider — supplies workers
+  HOST       // host employer — uses workers from providers
+}
+
+enum Plan {
+  FREE
+  PROVIDER   // $99/month
+  HOST       // $149/month
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum AustralianState {
+  VIC
+  QLD
+  SA
+  ACT
+  WA
+  NSW
+  TAS
+  NT
+}
+
+enum LicenceStatus {
+  ACTIVE      // valid, > 90 days remaining
+  EXPIRING    // 1-90 days remaining — needs attention
+  URGENT      // < 30 days remaining — critical
+  EXPIRED     // past expiry date
+  SUSPENDED   // suspended by authority
+  PENDING     // application submitted, awaiting approval
+}
+
+enum WorkRightStatus {
+  VALID
+  EXPIRING    // < 90 days
+  EXPIRED
+  RESTRICTED  // limited hours or conditions
+  UNKNOWN
+}
+
+enum AlertType {
+  LICENCE_EXPIRY
+  LICENCE_EXPIRED
+  WORKER_VISA_EXPIRY
+  WORKER_POLICE_CHECK
+  REPORT_DUE
+  LICENCE_SUSPENDED
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum ReportStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED
+  OVERDUE
+}
+
+enum DocumentCategory {
+  LICENCE_CERTIFICATE
+  POLICE_CHECK
+  VISA_DOCUMENT
+  WHS_CERTIFICATE
+  INSURANCE
+  OTHER
+}
