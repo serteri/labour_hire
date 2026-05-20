@@ -43,7 +43,17 @@ export const AddWorkerSchema = z.object({
   notes: z.string().optional(),
 })
 
+// Alias used for the licences form (scoped to active states only)
+export const LicenceSchema = z.object({
+  state: z.enum(['VIC', 'QLD', 'SA', 'ACT']),
+  licenceNumber: z.string().optional(),
+  issuedDate: z.string().optional(),
+  expiryDate: z.string().min(1, 'Expiry date is required'),
+  notes: z.string().optional(),
+})
+
 export type LoginInput = z.infer<typeof LoginSchema>
 export type RegisterInput = z.infer<typeof RegisterSchema>
 export type AddLicenceInput = z.infer<typeof AddLicenceSchema>
 export type AddWorkerInput = z.infer<typeof AddWorkerSchema>
+export type LicenceInput = z.infer<typeof LicenceSchema>
