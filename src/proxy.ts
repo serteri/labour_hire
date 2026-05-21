@@ -32,6 +32,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
+  const orgId = (session.user as typeof session.user & { orgId?: string })?.orgId
+
+  // Logged in but no org: route to onboarding (except onboarding route and org creation API)
+  if (!orgId && pathname !== '/onboarding' && !pathname.startsWith('/api/register/org')) {
+    return NextResponse.redirect(new URL('/onboarding', request.url))
+  }
+
+  if (orgId && pathname === '/onboarding') {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
   return NextResponse.next()
 }
 

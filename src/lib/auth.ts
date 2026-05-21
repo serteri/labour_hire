@@ -16,6 +16,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID ?? '',
       clientSecret: process.env.AUTH_GOOGLE_SECRET ?? '',
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       name: 'credentials',
@@ -45,14 +46,42 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
+        token.sub = user.id
       }
       return token
     },
     async session({ session, token }) {
-      if (token.id && session.user) {
-        session.user.id = token.id as string
+      try {
+        if (token.sub && session.user) {
+          session.user.id = token.sub
+
+          const membership = await prisma.organizationMember.findFirst({
+            where: { userId: token.sub },
+            include: { organization: true },
+          })
+
+          if (membership) {
+            ;(session.user as typeof session.user & {
+              orgId?: string
+              orgName?: string
+              role?: string
+            }).orgId = membership.orgId
+            ;(session.user as typeof session.user & {
+              orgId?: string
+              orgName?: string
+              role?: string
+            }).orgName = membership.organization.name
+            ;(session.user as typeof session.user & {
+              orgId?: string
+              orgName?: string
+              role?: string
+            }).role = membership.role
+          }
+        }
+      } catch (error) {
+        console.error('Session callback error:', error)
       }
+
       return session
     },
   },
