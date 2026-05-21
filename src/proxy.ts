@@ -1,33 +1,40 @@
 import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-const authProxy = auth((req) => {
-  const { nextUrl, auth: session } = req
-  const isLoggedIn = !!session?.user
+// Routes that do NOT require authentication
+const PUBLIC_ROUTES = ['/', '/login', '/register']
+const PUBLIC_PREFIXES = ['/api/auth', '/_next', '/favicon', '/logo']
 
-  // Protect all dashboard routes
-  const isProtectedRoute =
-    nextUrl.pathname.startsWith('/dashboard') ||
-    nextUrl.pathname.startsWith('/licences') ||
-    nextUrl.pathname.startsWith('/workers') ||
-    nextUrl.pathname.startsWith('/reports') ||
-    nextUrl.pathname.startsWith('/alerts') ||
-    nextUrl.pathname.startsWith('/settings')
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-  if (isProtectedRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/login', nextUrl))
+  // Allow all public routes and prefixes through
+  if (PUBLIC_ROUTES.includes(pathname)) {
+    return NextResponse.next()
   }
 
-  // Redirect logged-in users away from auth pages
-  if (isLoggedIn && (nextUrl.pathname === '/login' || nextUrl.pathname === '/register')) {
-    return NextResponse.redirect(new URL('/dashboard', nextUrl))
+  if (PUBLIC_PREFIXES.some(prefix => pathname.startsWith(prefix))) {
+    return NextResponse.next()
+  }
+
+  // Allow static files
+  if (pathname.includes('.')) {
+    return NextResponse.next()
+  }
+
+  // Check authentication for all other routes
+  const session = await auth()
+
+  if (!session) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
   return NextResponse.next()
-})
-
-export { authProxy as proxy }
+}
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }
