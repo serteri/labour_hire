@@ -1,12 +1,11 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { calculateLicenceStatus, daysUntilExpiry, formatAUDate } from '@/lib/utils'
+import { generateAlertsForOrg } from '@/lib/alerts'
 
 function daysUntil(date: Date | null): number | null {
-  if (!date) return null
-  return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+  // ...existing code...
 }
 
 export default async function DashboardPage() {
@@ -22,6 +21,12 @@ export default async function DashboardPage() {
   })
 
   if (!membership) redirect('/login')
+
+  const orgId = membership.orgId
+
+  // Silently generate fresh alerts on every dashboard visit
+  // This ensures alerts are always up to date
+  await generateAlertsForOrg(orgId).catch(console.error)
 
   const [licences, workers, unreadAlerts] = await Promise.all([
     prisma.licenceRecord.findMany({
