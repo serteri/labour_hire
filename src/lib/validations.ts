@@ -25,7 +25,7 @@ export const AddLicenceSchema = z.object({
   notes: z.string().optional(),
 })
 
-export const AddWorkerSchema = z.object({
+export const workerSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email().optional().or(z.literal('')),
@@ -34,14 +34,15 @@ export const AddWorkerSchema = z.object({
   visaType: z.string().optional(),
   visaSubclass: z.string().optional(),
   visaExpiryDate: z.string().optional(),
-  workRightStatus: z.enum(['VALID', 'EXPIRING', 'EXPIRED', 'RESTRICTED', 'UNKNOWN']).default('VALID'),
-  workHoursLimit: z.coerce.number().int().positive().optional(),
+  workHoursLimit: z.coerce.number().int().positive().optional().nullable(),
   policeCheckDate: z.string().optional(),
   policeCheckExpiry: z.string().optional(),
   whsInduction: z.boolean().default(false),
   whsInductionDate: z.string().optional(),
   notes: z.string().optional(),
 })
+
+export const AddWorkerSchema = workerSchema
 
 // Alias used for the licences form (scoped to active states only)
 export const LicenceSchema = z.object({
@@ -56,4 +57,6 @@ export type LoginInput = z.infer<typeof LoginSchema>
 export type RegisterInput = z.infer<typeof RegisterSchema>
 export type AddLicenceInput = z.infer<typeof AddLicenceSchema>
 export type AddWorkerInput = z.infer<typeof AddWorkerSchema>
+export type WorkerInput = z.infer<typeof workerSchema>
+export type WorkerFormInput = z.input<typeof workerSchema>
 export type LicenceInput = z.infer<typeof LicenceSchema>
