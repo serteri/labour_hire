@@ -3,9 +3,11 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { calculateLicenceStatus, daysUntilExpiry, formatAUDate } from '@/lib/utils'
 import { generateAlertsForOrg } from '@/lib/alerts'
+import Link from 'next/link'
 
 function daysUntil(date: Date | null): number | null {
-  // ...existing code...
+  if (!date) return null
+  return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 }
 
 export default async function DashboardPage() {

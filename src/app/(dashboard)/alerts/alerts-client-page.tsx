@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/use-toast'
+import * as React from 'react'
 
 type FilterType = 'ALL' | 'CRITICAL' | 'WARNING' | 'INFO'
 
@@ -18,7 +19,7 @@ interface AlertsClientPageProps {
   orgId: string
 }
 
-const AlertIcon: Record<AlertSeverity, JSX.Element> = {
+const AlertIcon: Record<AlertSeverity, React.ReactNode> = {
   CRITICAL: <AlertTriangle className="h-5 w-5 text-red-500" />,
   WARNING: <BellRing className="h-5 w-5 text-amber-500" />,
   INFO: <Info className="h-5 w-5 text-blue-500" />,
@@ -201,12 +202,12 @@ export function AlertsClientPage({ initialAlerts, orgId }: AlertsClientPageProps
                       Dismiss
                     </Button>
                     {alert.relatedType === 'LICENCE' && alert.relatedId && (
-                      <Button variant="link" size="sm" asChild>
+                      <Button variant="link" size="sm">
                         <Link href={`/licences?id=${alert.relatedId}`}>View Licence &rarr;</Link>
                       </Button>
                     )}
                     {alert.relatedType === 'WORKER' && alert.relatedId && (
-                      <Button variant="link" size="sm" asChild>
+                      <Button variant="link" size="sm">
                         <Link href={`/workers?id=${alert.relatedId}`}>View Worker &rarr;</Link>
                       </Button>
                     )}

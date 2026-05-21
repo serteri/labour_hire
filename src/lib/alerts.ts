@@ -1,15 +1,10 @@
-import { differenceInDays, format, isBefore } from 'date-fns'
+import { differenceInDays, format } from 'date-fns'
 import {
   AlertType,
   AlertSeverity,
-  LicenceRecord,
-  LicenceStatus,
-  ReportRecord,
   ReportStatus,
-  WorkerRecord,
 } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import { calculateLicenceStatus } from '@/lib/utils'
 import { STATE_AUTHORITIES } from '@/lib/compliance'
 
 const WORK_RIGHT_EXPIRY_THRESHOLD_DAYS = 90
@@ -17,18 +12,6 @@ const POLICE_CHECK_EXPIRY_THRESHOLD_DAYS = 60
 const REPORT_DUE_THRESHOLD_DAYS = 60
 const LICENCE_CRITICAL_THRESHOLD_DAYS = 7
 const REPORT_CRITICAL_THRESHOLD_DAYS = 14
-
-function calculateWorkRightStatusFromDate(visaExpiryDate: Date | null): AlertSeverity | null {
-  if (!visaExpiryDate) return null // Assumed valid indefinitely
-
-  const today = new Date()
-  const daysUntilExpiry = differenceInDays(visaExpiryDate, today)
-
-  if (daysUntilExpiry <= 0) return AlertSeverity.CRITICAL // Expired
-  if (daysUntilExpiry <= LICENCE_CRITICAL_THRESHOLD_DAYS) return AlertSeverity.CRITICAL // Expiring critically soon
-  if (daysUntilExpiry <= WORK_RIGHT_EXPIRY_THRESHOLD_DAYS) return AlertSeverity.WARNING // Expiring soon
-  return AlertSeverity.INFO // Valid, but within range for info alert
-}
 
 export async function generateAlertsForOrg(orgId: string): Promise<void> {
   const today = new Date()
@@ -56,12 +39,11 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
   // A) LICENCE ALERTS
   // ───────────────────────────
   const licences = await prisma.licenceRecord.findMany({
-    where: { orgId, isActive: true },
+    where: { orgId },
   })
 
   for (const licence of licences) {
     const daysUntil = differenceInDays(licence.expiryDate, today)
-    const licenceStatus = calculateLicenceStatus(licence.expiryDate)
 
     if (daysUntil <= WORK_RIGHT_EXPIRY_THRESHOLD_DAYS && daysUntil >= -30) {
       const existing = existingAlerts.find(
@@ -145,7 +127,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
 
         if (daysUntil < 0) {
           severity = AlertSeverity.CRITICAL
-          alertType = AlertType.WORKER_VISA_EXPIRED
+          alertType = AlertType.WORKER_VISA_EXPIRY
           title = `${worker.firstName} ${worker.lastName} — visa EXPIRED ${Math.abs(daysUntil)} days ago`
         } else if (daysUntil <= LICENCE_CRITICAL_THRESHOLD_DAYS) {
           severity = AlertSeverity.CRITICAL

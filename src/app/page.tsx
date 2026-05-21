@@ -19,10 +19,10 @@ export default function LandingPage() {
             LabourHire
           </Link>
           <div className="flex items-center gap-4">
-            <Button asChild variant="ghost" className="text-blue-700 hover:bg-blue-50">
+            <Button variant="ghost" className="text-blue-700 hover:bg-blue-50">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-blue-600 hover:bg-blue-700">
               <Link href="/register">Get Started Free</Link>
             </Button>
           </div>
@@ -40,10 +40,10 @@ export default function LandingPage() {
             LabourHire helps Australian labour hire providers effortlessly manage licences, workers, and compliance obligations. Stay audit-ready, always.
           </p>
           <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-            <Button asChild size="lg" className="bg-blue-600 text-lg hover:bg-blue-700">
+            <Button size="lg" className="bg-blue-600 text-lg hover:bg-blue-700">
               <Link href="/register">Start Your Free Trial</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800">
+            <Button size="lg" variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800">
               <Link href="#features">Learn More</Link>
             </Button>
           </div>
@@ -99,7 +99,7 @@ export default function LandingPage() {
             <p className="mx-auto mt-4 max-w-2xl text-lg opacity-90">
               Join hundreds of Australian labour hire providers who trust LabourHire to keep them compliant and stress-free.
             </p>
-            <Button asChild size="lg" className="mt-10 bg-white text-lg font-semibold text-blue-700 hover:bg-blue-50">
+              <Button size="lg" className="mt-10 bg-white text-lg font-semibold text-blue-700 hover:bg-blue-50">
               <Link href="/register">Get Started Free Today</Link>
             </Button>
           </div>

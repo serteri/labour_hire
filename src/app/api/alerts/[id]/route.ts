@@ -14,10 +14,9 @@ async function getOwnedAlert(id: string, orgId: string) {
   return prisma.complianceAlert.findFirst({ where: { id, orgId } })
 }
 
-// @ts-ignore
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -29,7 +28,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'No organisation found' }, { status: 404 })
   }
 
-  const { id } = params
+  const { id } = await params
   const existing = await getOwnedAlert(id, orgId)
   if (!existing) {
     return NextResponse.json({ error: 'Alert not found' }, { status: 404 })
