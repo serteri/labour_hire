@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { workerSchema } from '@/lib/validations'
 
 const CITIZEN_OR_PR = ['Australian Citizen', 'Permanent Resident'] as const
+const WORK_RIGHT_STATUSES = ['VALID', 'EXPIRING', 'EXPIRED', 'RESTRICTED', 'UNKNOWN'] as const
 
 function calculateWorkRightStatus(visaExpiryDate?: string | null): WorkRightStatus {
   if (!visaExpiryDate) return 'VALID'
@@ -41,6 +42,17 @@ export async function GET(request: NextRequest) {
   const status = searchParams.get('status')
   const search = searchParams.get('search')?.trim()
 
+  if (status && !WORK_RIGHT_STATUSES.includes(status as WorkRightStatus)) {
+    return NextResponse.json({ error: 'Invalid status filter' }, { status: 400 })
+  }
+
+  const searchTerms = search
+    ? search
+        .split(/\s+/)
+        .map((term) => term.trim())
+        .filter(Boolean)
+    : []
+
   const workers = await prisma.workerRecord.findMany({
     where: {
       orgId,
@@ -49,12 +61,14 @@ export async function GET(request: NextRequest) {
             workRightStatus: status as WorkRightStatus,
           }
         : {}),
-      ...(search
+      ...(searchTerms.length > 0
         ? {
-            OR: [
-              { firstName: { contains: search, mode: 'insensitive' } },
-              { lastName: { contains: search, mode: 'insensitive' } },
-            ],
+            AND: searchTerms.map((term) => ({
+              OR: [
+                { firstName: { contains: term, mode: 'insensitive' } },
+                { lastName: { contains: term, mode: 'insensitive' } },
+              ],
+            })),
           }
         : {}),
     },

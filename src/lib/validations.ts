@@ -34,7 +34,7 @@ export const workerSchema = z.object({
   visaType: z.string().optional(),
   visaSubclass: z.string().optional(),
   visaExpiryDate: z.string().optional(),
-  workHoursLimit: z.coerce.number().int().positive().optional().nullable(),
+  workHoursLimit: z.number().int().positive().optional().nullable(),
   policeCheckDate: z.string().optional(),
   policeCheckExpiry: z.string().optional(),
   whsInduction: z.boolean().default(false),
