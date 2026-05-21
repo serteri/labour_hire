@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
@@ -10,7 +11,6 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/use-toast'
-import * as React from 'react'
 
 type FilterType = 'ALL' | 'CRITICAL' | 'WARNING' | 'INFO'
 
