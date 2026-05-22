@@ -21,9 +21,9 @@ export default function LandingPage() {
             />
             SA Grace Period ends 29 July 2026
           </p>
-          <a href="#pricing" className="text-[13px] font-semibold text-amber-300 transition hover:text-amber-100">
+          <Link href="/pricing" className="text-[13px] font-semibold text-amber-300 transition hover:text-amber-100">
             Get compliant →
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -35,11 +35,14 @@ export default function LandingPage() {
           </Link>
 
           <div className="hidden items-center gap-5 md:flex">
-            <a href="#features" className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
+            <Link href="/features" className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
               Features
-            </a>
-            <a href="#pricing" className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
+            </Link>
+            <Link href="/pricing" className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
               Pricing
+            </Link>
+            <a href="mailto:hello@providershield.com.au" className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
+              Contact
             </a>
             <span className="h-5 w-px bg-[var(--border)]" />
             <Link
@@ -104,12 +107,12 @@ export default function LandingPage() {
                 Start Free Trial
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <a
-                href="#features"
+              <Link
+                href="/features"
                 className="inline-flex items-center justify-center rounded-[10px] border border-[var(--border-strong)] px-7 py-3.5 font-semibold text-[var(--text-primary)] transition hover:border-white/25"
               >
                 See how it works
-              </a>
+              </Link>
             </div>
 
             <p className="mt-6 text-[13px] text-[var(--text-muted)]">
@@ -180,7 +183,7 @@ export default function LandingPage() {
         <section id="features" className="bg-[var(--bg-surface)] px-4 py-20 md:py-24">
           <div className="mx-auto max-w-7xl">
             <h2 className="text-center text-[28px] font-bold md:text-[40px]">Everything you need to stay compliant</h2>
-            <p className="mt-4 text-center text-[16px] leading-[1.7] text-[var(--text-secondary)]">
+            <p className="mt-4 text-center text-[16px] leading-[1.7] text-[#9090a8]">
               Built specifically for Australian labour hire providers
             </p>
 
@@ -381,7 +384,7 @@ export default function LandingPage() {
         >
           <div className="mx-auto max-w-3xl">
             <h2 className="text-[28px] font-bold md:text-[40px]">Start before the 29 July deadline.</h2>
-            <p className="mx-auto mt-4 max-w-xl text-[16px] leading-[1.7] text-[var(--text-secondary)]">
+            <p className="mx-auto mt-4 max-w-xl text-[16px] leading-[1.7] text-[#9090a8]">
               Get set up in 5 minutes. No credit card required.
             </p>
             <Link
@@ -407,13 +410,13 @@ export default function LandingPage() {
           </div>
 
           <div className="flex gap-5 text-sm text-[var(--text-secondary)]">
-            <a href="#" className="transition hover:text-[var(--text-primary)]">
+            <a href="/privacy" className="transition hover:text-[var(--text-primary)]">
               Privacy Policy
             </a>
-            <a href="#" className="transition hover:text-[var(--text-primary)]">
+            <a href="/terms" className="transition hover:text-[var(--text-primary)]">
               Terms
             </a>
-            <a href="#" className="transition hover:text-[var(--text-primary)]">
+            <a href="mailto:hello@providershield.com.au" className="transition hover:text-[var(--text-primary)]">
               Contact
             </a>
           </div>
