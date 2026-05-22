@@ -1,28 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { generateAlertsForOrg } from '@/lib/alerts'
 import { prisma } from '@/lib/prisma'
 
-async function getOrgId(userId: string): Promise<string | null> {
-  const membership = await prisma.organizationMember.findFirst({
-    where: { userId },
-    select: { orgId: true },
-  })
-  return membership?.orgId ?? null
-}
-
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!session?.user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const orgId = await getOrgId(session.user.id)
-  if (!orgId) return NextResponse.json({ error: 'Organization ID not found in session' }, { status: 400 })
+  const orgId = (session.user as { orgId?: string }).orgId
+  if (!orgId) return Response.json({ error: 'No org' }, { status: 400 })
 
-  try {
-    await generateAlertsForOrg(orgId)
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('[API Alerts Generate POST]', error)
-    return NextResponse.json({ error: 'Failed to generate alerts' }, { status: 500 })
-  }
+  await generateAlertsForOrg(orgId)
+
+  const owner = await prisma.organizationMember.findFirst({
+    where: { orgId, role: 'OWNER' },
+    include: { user: true },
+  })
+
+  return Response.json({
+    success: true,
+    orgId,
+    ownerEmail: owner?.user?.email ?? 'NOT FOUND',
+  })
 }
