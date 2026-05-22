@@ -97,6 +97,15 @@ export async function DELETE(
     return NextResponse.json({ error: 'Licence not found' }, { status: 404 })
   }
 
+  // Delete related alerts first
+  await prisma.complianceAlert.deleteMany({
+    where: {
+      relatedId: id,
+      relatedType: 'LICENCE',
+      orgId,
+    },
+  })
+
   await prisma.licenceRecord.delete({ where: { id } })
   return NextResponse.json({ success: true })
 }

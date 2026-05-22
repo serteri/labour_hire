@@ -155,6 +155,14 @@ export async function DELETE(
     return NextResponse.json({ error: 'Worker not found' }, { status: 404 })
   }
 
+  await prisma.complianceAlert.deleteMany({
+    where: {
+      relatedId: id,
+      relatedType: 'WORKER',
+      orgId,
+    },
+  })
+
   await prisma.workerRecord.delete({ where: { id } })
   return NextResponse.json({ success: true })
 }
