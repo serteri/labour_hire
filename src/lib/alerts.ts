@@ -17,6 +17,7 @@ const REPORT_CRITICAL_THRESHOLD_DAYS = 14
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '')
 
 async function notifyOrgOwnerForAlert({
+  newAlert,
   orgId,
   severity,
   alertTitle,
@@ -24,6 +25,7 @@ async function notifyOrgOwnerForAlert({
   daysUntil,
   actionPath,
 }: {
+  newAlert: { id: string; type: AlertType; severity: AlertSeverity }
   orgId: string
   severity: AlertSeverity
   alertTitle: string
@@ -31,6 +33,9 @@ async function notifyOrgOwnerForAlert({
   daysUntil: number | null
   actionPath: '/licences' | '/workers' | '/reports'
 }) {
+  console.log('[ALERT EMAIL] Alert created:', newAlert.id, newAlert.type)
+  console.log('[ALERT EMAIL] Severity:', newAlert.severity)
+
   if (severity !== AlertSeverity.CRITICAL && severity !== AlertSeverity.WARNING) {
     return
   }
@@ -40,11 +45,14 @@ async function notifyOrgOwnerForAlert({
       where: { orgId, role: 'OWNER' },
       include: { user: true },
     })
+    console.log('[ALERT EMAIL] Owner found:', ownerMembership?.user?.email)
 
     const ownerEmail = ownerMembership?.user?.email
     if (!ownerEmail) return
 
     const actionUrl = `${APP_URL}${actionPath}`
+
+    console.log('[ALERT EMAIL] Sending email to:', ownerMembership?.user?.email)
 
     await sendAlertEmail({
       to: ownerEmail,
@@ -54,7 +62,7 @@ async function notifyOrgOwnerForAlert({
       actionUrl,
     })
   } catch (error) {
-    console.error('[ALERT EMAIL]', error)
+    console.error('[ALERT EMAIL] Email send failed:', error)
   }
 }
 
@@ -114,7 +122,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
         licence.licenceNumber || 'N/A'
       }) expires on ${format(licence.expiryDate, 'dd/MM/yyyy')}.` + portalLink
 
-      await prisma.complianceAlert.create({
+      const newAlert = await prisma.complianceAlert.create({
         data: {
           orgId,
           type: alertType,
@@ -128,6 +136,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
       })
 
       await notifyOrgOwnerForAlert({
+        newAlert,
         orgId,
         severity,
         alertTitle: title,
@@ -191,7 +200,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
         'dd/MM/yyyy'
       )}. Ensure renewal or transition is in progress.`
 
-      await prisma.complianceAlert.create({
+      const newAlert = await prisma.complianceAlert.create({
         data: {
           orgId,
           type: alertType,
@@ -205,6 +214,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
       })
 
       await notifyOrgOwnerForAlert({
+        newAlert,
         orgId,
         severity,
         alertTitle: title,
@@ -261,7 +271,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
         'dd/MM/yyyy'
       )}. Request an updated police check.`
 
-      await prisma.complianceAlert.create({
+      const newAlert = await prisma.complianceAlert.create({
         data: {
           orgId,
           type: alertType,
@@ -275,6 +285,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
       })
 
       await notifyOrgOwnerForAlert({
+        newAlert,
         orgId,
         severity,
         alertTitle: title,
@@ -329,7 +340,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
         'dd/MM/yyyy'
       )}. Please submit via the state authority portal.`
 
-      await prisma.complianceAlert.create({
+      const newAlert = await prisma.complianceAlert.create({
         data: {
           orgId,
           type: alertType,
@@ -343,6 +354,7 @@ export async function generateAlertsForOrg(orgId: string): Promise<void> {
       })
 
       await notifyOrgOwnerForAlert({
+        newAlert,
         orgId,
         severity,
         alertTitle: title,
