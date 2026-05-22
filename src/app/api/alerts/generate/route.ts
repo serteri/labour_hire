@@ -22,3 +22,25 @@ export async function POST(req: Request) {
     ownerEmail: owner?.user?.email ?? 'NOT FOUND',
   })
 }
+
+export async function GET() {
+  const session = await auth()
+  if (!session?.user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const orgId = (session.user as { orgId?: string }).orgId
+  if (!orgId) {
+    return Response.json({ error: 'No orgId in session', session: session.user }, { status: 400 })
+  }
+
+  const owner = await prisma.organizationMember.findFirst({
+    where: { orgId, role: 'OWNER' },
+    include: { user: true },
+  })
+
+  return Response.json({
+    success: true,
+    orgId,
+    ownerEmail: owner?.user?.email ?? 'NOT FOUND',
+    ownerFound: !!owner,
+  })
+}
