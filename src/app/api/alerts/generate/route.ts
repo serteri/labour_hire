@@ -28,19 +28,39 @@ export async function GET() {
   if (!session?.user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const orgId = (session.user as { orgId?: string }).orgId
-  if (!orgId) {
-    return Response.json({ error: 'No orgId in session', session: session.user }, { status: 400 })
-  }
+  if (!orgId) return Response.json({ error: 'No orgId' }, { status: 400 })
 
   const owner = await prisma.organizationMember.findFirst({
     where: { orgId, role: 'OWNER' },
     include: { user: true },
   })
 
+  if (!owner?.user?.email) {
+    return Response.json({ error: 'Owner not found' }, { status: 404 })
+  }
+
+  let emailResult: unknown = null
+  let emailError: string | null = null
+
+  try {
+    const { sendAlertEmail } = await import('@/lib/email')
+    emailResult = await sendAlertEmail({
+      to: owner.user.email,
+      alertTitle: 'Debug Test — Alert Email',
+      alertDescription: 'Testing email from alerts generate endpoint.',
+      daysUntil: 15,
+      actionUrl: process.env.NEXT_PUBLIC_APP_URL + '/licences',
+    })
+  } catch (error) {
+    emailError = String(error)
+  }
+
   return Response.json({
-    success: true,
     orgId,
-    ownerEmail: owner?.user?.email ?? 'NOT FOUND',
-    ownerFound: !!owner,
+    ownerEmail: owner.user.email,
+    emailResult,
+    emailError,
+    resendKeySet: !!process.env.RESEND_API_KEY,
+    fromEmail: process.env.RESEND_FROM_EMAIL,
   })
 }

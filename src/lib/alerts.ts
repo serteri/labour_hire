@@ -32,7 +32,7 @@ async function notifyOrgOwnerForAlert({
   alertDescription: string
   daysUntil: number | null
   actionPath: '/licences' | '/workers' | '/reports'
-}) {
+}): Promise<{ success: true } | { success: false; error: string } | undefined> {
   console.log('[ALERT EMAIL] Alert created:', newAlert.id, newAlert.type)
   console.log('[ALERT EMAIL] Severity:', newAlert.severity)
 
@@ -61,8 +61,11 @@ async function notifyOrgOwnerForAlert({
       daysUntil,
       actionUrl,
     })
+
+    return { success: true }
   } catch (error) {
     console.error('[ALERT EMAIL] Email send failed:', error)
+    return { success: false, error: String(error) }
   }
 }
 
