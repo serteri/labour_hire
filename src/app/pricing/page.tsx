@@ -8,10 +8,28 @@ const providerFeatures = [
   'Compliance dashboard',
 ]
 
-const hostFeatures = [
-  'Everything in Provider plan',
-  'Early access updates and release notes',
-  'Priority onboarding when launched',
+const hostFeatures: { label: string; subtext?: string; comingSoon?: boolean }[] = [
+  { label: 'Everything in Provider plan' },
+  {
+    label: 'Provider licence verification portal',
+    subtext: 'Instantly check if your labour hire provider is licensed in VIC, QLD, SA or ACT',
+    comingSoon: true,
+  },
+  {
+    label: 'Pre-mobilisation approval workflow',
+    subtext: 'Require licence verification before any worker can be deployed to your site',
+    comingSoon: true,
+  },
+  {
+    label: 'Full audit trail',
+    subtext: 'Documented proof you verified every provider — critical if you face a WorkSafe investigation',
+    comingSoon: true,
+  },
+  {
+    label: 'Multi-site management',
+    subtext: 'Manage compliance across all your locations from one dashboard',
+    comingSoon: true,
+  },
 ]
 
 export default function PricingPage() {
@@ -85,26 +103,43 @@ export default function PricingPage() {
               <p className="mt-3 text-[16px] leading-[1.7] text-[var(--text-secondary)]">
                 For businesses that engage labour hire providers
               </p>
-              <ul className="mt-6 space-y-2.5 text-[15px] text-[var(--text-secondary)]">
+              <p className="mt-2 text-[14px] font-medium text-amber-300">
+                ⚠️ Host employers face up to $500,000 in fines for engaging unlicensed providers.
+              </p>
+              <ul className="mt-6 space-y-4 text-[15px] text-[var(--text-secondary)]">
                 {hostFeatures.map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-[var(--accent-blue)]" />
-                    {item}
+                  <li key={item.label}>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--accent-blue)]" />
+                      <span>{item.label}</span>
+                      {item.comingSoon && (
+                        <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
+                          Coming Soon
+                        </span>
+                      )}
+                    </div>
+                    {item.subtext && (
+                      <p className="mt-1 pl-6 text-[13px] leading-[1.6] text-[var(--text-muted)]">{item.subtext}</p>
+                    )}
                   </li>
                 ))}
               </ul>
               <Link
                 href="/register"
-                className="mt-8 inline-flex w-full items-center justify-center rounded-lg border border-[var(--border-strong)] px-5 py-3 font-semibold text-[var(--text-primary)] transition hover:border-white/30"
+                className="mt-8 inline-flex w-full items-center justify-center rounded-lg bg-amber-500 px-5 py-3 font-semibold text-white transition hover:bg-amber-400"
               >
                 Join Waitlist
               </Link>
+              <p className="mt-3 text-center text-[13px] text-[var(--text-muted)]">
+                Be first to access when Host features launch. No payment until then.
+              </p>
             </article>
           </div>
 
-          <div className="mt-7 rounded-2xl border border-amber-400/35 bg-amber-500/10 p-5 text-[15px] text-amber-100">
-            🎁 Founding Member Offer — First 50 customers get $69/month (Provider) or $99/month (Host), locked in
-            for life.
+          <div className="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-[15px] leading-[1.7] text-[var(--text-secondary)]">
+            <strong className="text-[var(--text-primary)]">Why does Host cost more?</strong> Host employers carry
+            significant legal liability for their providers&apos; compliance. The Host portal includes automated
+            verification workflows that protect you from $500,000+ fines.
           </div>
         </div>
       </main>
