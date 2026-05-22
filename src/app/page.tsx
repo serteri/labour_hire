@@ -303,79 +303,22 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="pricing" className="bg-[var(--bg-base)] px-4 py-20 md:py-24">
-          <div className="mx-auto max-w-7xl">
-            <h2 className="text-center text-[28px] font-bold md:text-[40px]">Simple pricing. No surprises.</h2>
-
-            <div className="mt-12 grid gap-6 lg:grid-cols-2">
-              <article className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-7">
-                <span className="inline-flex rounded-full bg-[rgba(79,123,255,0.2)] px-3 py-1 text-xs font-semibold text-[var(--accent-blue)]">
-                  Most Popular
-                </span>
-                <h3 className="mt-5 text-xl font-semibold">PROVIDER PLAN</h3>
-                <p className="mt-3 text-5xl font-bold">
-                  $99 <span className="text-base font-medium text-[var(--text-muted)]">/month</span>
-                </p>
-                <p className="mt-3 text-[16px] leading-[1.7] text-[var(--text-secondary)]">For labour hire providers</p>
-                <ul className="mt-6 space-y-2.5 text-[var(--text-secondary)]">
-                  {[
-                    'All 4 state licences (VIC, QLD, SA, ACT)',
-                    'Unlimited worker records',
-                    'Automated email alerts',
-                    'Compliance dashboard',
-                    'Xero integration',
-                    'Reporting assistant',
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-[var(--accent-blue)]" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/register"
-                  className="mt-8 inline-flex w-full items-center justify-center rounded-lg bg-[var(--accent-blue)] px-5 py-3 font-semibold text-white transition hover:brightness-110"
-                >
-                  Start Free Trial
-                </Link>
-              </article>
-
-              <article className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-7">
-                <h3 className="text-xl font-semibold">HOST EMPLOYER PLAN</h3>
-                <p className="mt-3 text-5xl font-bold">
-                  $149 <span className="text-base font-medium text-[var(--text-muted)]">/month</span>
-                </p>
-                <p className="mt-3 text-[16px] leading-[1.7] text-[var(--text-secondary)]">
-                  For businesses using labour hire
-                </p>
-                <ul className="mt-6 space-y-2.5 text-[var(--text-secondary)]">
-                  {[
-                    'Everything in Provider',
-                    'Provider licence verification',
-                    'Mobilisation approval workflow',
-                    'Full audit trail',
-                    'Multi-site management',
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-[var(--accent-blue)]" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/register"
-                  className="mt-8 inline-flex w-full items-center justify-center rounded-lg border border-[var(--border-strong)] px-5 py-3 font-semibold text-[var(--text-primary)] transition hover:border-white/30"
-                >
-                  Start Free Trial
-                </Link>
-              </article>
-            </div>
-
-            <div className="mt-7 rounded-2xl border border-amber-400/35 bg-amber-500/10 p-5 text-amber-100">
-              🎁 Founding Member Offer — First 50 customers get $69/month (Provider) or $99/month (Host), locked in
-              for life.
-            </div>
-          </div>
+        <section className="bg-[var(--bg-base)] px-4 py-20 text-center">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-blue)]">
+            Simple Pricing
+          </p>
+          <h2 className="mt-4 text-[40px] font-bold text-[var(--text-primary)]">
+            $99/month. No surprises.
+          </h2>
+          <p className="mt-4 text-[17px] text-[var(--text-secondary)]">
+            One plan for labour hire providers. Cancel anytime.
+          </p>
+          <Link
+            href="/pricing"
+            className="mt-8 inline-flex items-center gap-2 rounded-xl border border-[var(--border-strong)] px-7 py-3.5 font-semibold text-[var(--text-primary)] transition hover:border-white/30"
+          >
+            View full pricing →
+          </Link>
         </section>
 
         <section
