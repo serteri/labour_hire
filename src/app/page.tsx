@@ -41,9 +41,9 @@ export default function LandingPage() {
             <Link href="/pricing" className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
               Pricing
             </Link>
-            <a href="mailto:hello@providershield.com.au" className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
+            <Link href="/contact" className="text-sm text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
               Contact
-            </a>
+            </Link>
             <span className="h-5 w-px bg-[var(--border)]" />
             <Link
               href="/login"
@@ -416,9 +416,9 @@ export default function LandingPage() {
             <a href="/terms" className="transition hover:text-[var(--text-primary)]">
               Terms
             </a>
-            <a href="mailto:hello@providershield.com.au" className="transition hover:text-[var(--text-primary)]">
+            <Link href="/contact" className="transition hover:text-[var(--text-primary)]">
               Contact
-            </a>
+            </Link>
           </div>
         </div>
       </footer>

@@ -44,9 +44,9 @@ export default function FeaturesPage() {
             <Link href="/pricing" className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
               Pricing
             </Link>
-            <a href="mailto:hello@providershield.com.au" className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
+            <Link href="/contact" className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
               Contact
-            </a>
+            </Link>
             <Link href="/register" className="rounded-lg bg-[var(--accent-blue)] px-4 py-2 font-semibold text-white">
               Start Free Trial
             </Link>
