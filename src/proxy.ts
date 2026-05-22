@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Routes that do NOT require authentication
-const PUBLIC_ROUTES = ['/', '/login', '/register', '/features', '/pricing', '/contact']
-const PUBLIC_PREFIXES = ['/api/auth', '/api/contact', '/_next', '/favicon', '/logo']
+const PUBLIC_ROUTES = ['/', '/login', '/register', '/features', '/pricing', '/contact', '/waitlist']
+const PUBLIC_PREFIXES = ['/api/auth', '/api/contact', '/api/waitlist', '/_next', '/favicon', '/logo']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl

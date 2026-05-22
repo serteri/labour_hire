@@ -125,7 +125,7 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Link
-                href="/register"
+                href="/waitlist"
                 className="mt-8 inline-flex w-full items-center justify-center rounded-lg bg-amber-500 px-5 py-3 font-semibold text-white transition hover:bg-amber-400"
               >
                 Join Waitlist

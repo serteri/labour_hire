@@ -207,7 +207,16 @@ model Document {
   licence      LicenceRecord? @relation(fields: [licenceId], references: [id])
   worker       WorkerRecord?  @relation(fields: [workerId], references: [id])
 }
+// ─── WAITLIST ──────────────────────────────────────────────────
 
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  company   String?
+  phone     String?
+  createdAt DateTime @default(now())
+}
 // ─── ENUMS ─────────────────────────────────────────────────────
 
 enum AccountType {
